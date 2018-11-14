@@ -1,0 +1,122 @@
+import java.util.HashSet;
+
+public class MyMultiset<E> implements Multiset<E> {
+	TreeSet<Integer> MyMultiset = new TreeSet<Integer>();
+  
+public MyMultiset() {
+  // TODO Implementare
+    }
+    
+public int size() {
+  return MyMultiset.size();
+    }
+    
+public int count(Object element) {
+  int contatore = 0;
+    if(!MyMultiset.contains(element)) {
+    	contatore = 0;
+    	}
+   for(int i = MyMultiset.first(); i < MyMultiset.last(); i++) {  //non funziona sempre
+    	if(MyMultiset.contains(element) ) {
+    		contatore++;
+    		}
+    	}
+        return contatore;
+    }
+    
+ public int add(E element, int occurrences) {
+    int contatore = 0;
+    	for(int i = 1; i == occurrences; i++) {
+    		contatore++;
+    		MyMultiset.add((java.lang.Integer) element);
+    	}
+    if(occurrences >= Integer.MAX_VALUE) {
+    	throw new IllegalArgumentException(Integer.toString(occurrences));
+    	}
+    return contatore;	
+    }
+    
+  public void add(E element) {
+    MyMultiset.add((Integer) element);  //MyMultiset.add() richiede un int	
+    }
+    
+  public int remove(Object element, int occurrences) {
+    if(occurrences <= 0) {
+    	throw new IllegalArgumentException(Integer.toString(occurrences));
+    } else if((Boolean) (element = null)) {
+    	  throw new NullPointerException();
+    	}
+    for(int i = 0; i == occurrences; i++) {
+    		MyMultiset.remove(element);
+    	}
+       return 0;   //DA MODIFICARE
+    }
+    
+  public boolean remove(Object element) {
+    boolean bool = false;
+    if(MyMultiset.remove(element)) {
+       bool = true;
+       }
+    else {
+    	bool = false;
+    	}
+    return bool;
+    }
+
+  public int setCount(E element, int count) {
+      // TODO implementare
+      return 0;
+    }
+    
+   public Set<E> elementSet() {
+       // TODO implementare
+       return null;
+    }
+    
+    public Iterator<E> iterator() {
+       // TODO implementare
+       return null;
+    }
+    
+  public boolean contains(Object element) {
+    boolean bool = false;
+    if(MyMultiset.contains(element)) {
+    	bool = true;
+    }
+    else {
+    	bool = false;
+    	}
+    return bool;
+    }
+    
+   public void clear() {
+     MyMultiset.clear();
+    }
+    
+   public boolean isEmpty() {
+    boolean bool = false;
+    if(MyMultiset.isEmpty()) {
+    	bool = true;
+      }
+    else  {
+    	bool = false;
+    	}
+    return bool;
+    }
+    
+   public int hashCode() {
+       // TODO Implementare
+    }
+    
+    @Override
+   public boolean equals(Object obj) {
+    boolean bool = false;
+    if(MyMultiset.equals(obj)) {
+    	bool = true;
+    	}
+    else if(!MyMultiset.equals(obj)) {
+    	bool = false;
+    	}
+    return bool;
+    }
+ }
