@@ -1,0 +1,215 @@
+import java.util.*;
+import java.util.HashSet; // Utilizzare questa classe per i set
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+
+/**
+ * TODO spiegare come viene implementato il multiset.
+ * 
+ * @author Luca Tesei (template) **Nome Cognome Studente** (implementazione)
+ *
+ * @param <E>
+ *            il tipo degli elementi del multiset
+ */
+public class MyMultiset<E> implements Multiset<E> {
+	private List<E> ListaMultiset;
+	private List<Integer> OccorrenzeMultiset;
+	private int Numero;
+    // TODO Inserire le variabili istanza che servono
+
+    // TODO Inserire eventuali classi interne per gli elementi del multinsieme e
+    // per l'iteratore.
+
+    /**
+     * Crea un multiset vuoto.
+     */
+    public MyMultiset() {
+        // TODO Implementare
+    	ListaMultiset = new ArrayList<E>();
+    	OccorrenzeMultiset = new ArrayList<Integer>();
+    	this.Numero = Numero;
+    }
+
+    public int size() {
+        // TODO Implementare
+    	int size = 0;
+		for (Integer i: OccorrenzeMultiset){
+			size += i;
+		}
+		return size;
+    }
+
+    public int count(Object element) {
+        // TODO Implementare
+    	if(element == null) {
+    		throw new NullPointerException();
+    	}
+    	int index = ListaMultiset.indexOf(element);
+    	if (index == -1) {
+			return 0;
+		} else if (index != -1) {
+			return OccorrenzeMultiset.get(index);
+		}
+		return index;
+    }
+
+    public int add(E element, int occurrences) {
+        // TODO Implementare
+    	if(element == null) {
+    		throw new NullPointerException();
+    	}
+    	if (occurrences < 0) {
+			throw new IllegalArgumentException();
+		}
+    	if(occurrences == Integer.MAX_VALUE) {
+    		throw new IllegalArgumentException();
+    	}
+
+    	int indice = ListaMultiset.indexOf(element);
+		int prevCount = 0;
+
+		if (indice != -1) {
+			prevCount = OccorrenzeMultiset.get(indice);
+			OccorrenzeMultiset.set(indice, prevCount + occurrences);
+		}
+		else if (occurrences != 0) {
+			ListaMultiset.add(element);
+			OccorrenzeMultiset.add(occurrences);
+		}
+
+		return prevCount;
+    	
+    }
+
+    public void add(E element) {
+        // TODO Implementare
+    	if(element == null) {
+    		throw new NullPointerException();
+    	}
+    	int indice = ListaMultiset.indexOf(element);
+		int prevCount = 0;
+
+		if (indice != -1) {
+			prevCount = OccorrenzeMultiset.get(indice);
+			OccorrenzeMultiset.set(indice, prevCount + 1);
+		}
+    }
+
+    public int remove(Object element, int occurrences) {
+    	int index = ListaMultiset.indexOf(element);
+    	int prevCount = OccorrenzeMultiset.get(index);
+        // TODO implementare
+    	if (occurrences < 0) {
+			throw new IllegalArgumentException();
+		}
+
+		if (index == -1)
+			return 0;
+
+		if (prevCount > occurrences) {
+			OccorrenzeMultiset.set(index, prevCount - occurrences);
+		}
+		else {
+			ListaMultiset.remove(index);
+			OccorrenzeMultiset.remove(index);
+		}
+
+		return prevCount;
+    }
+
+    public boolean remove(Object element) {
+        // TODO implementare
+		return remove(element, 1) > 0;
+    }
+    
+    public int setCount(E element, int count) {
+    	
+    	if (count < 0) {
+			throw new IllegalArgumentException();
+		}
+
+		if (count == 0)
+			remove(element);
+
+		int index = ListaMultiset.indexOf(element);
+		if (index == -1)
+			return add(element, count);
+
+		int prevCount = (int) ListaMultiset.get(index);
+		OccorrenzeMultiset.set(index, count);
+
+		return prevCount;
+		}
+        // TODO implementare
+
+
+    public Set<E> elementSet() {
+        // TODO implementare
+    	Set<E> p = new HashSet<E>(ListaMultiset);                
+    	return p;
+    }
+
+    public Iterator<E> iterator() {
+		return null;
+        // TODO implementare
+    }
+
+    public boolean contains(Object element) {
+        // TODO implementare
+    	if(element == null) {
+    		throw new NullPointerException();
+    	}
+    	return ListaMultiset.contains(element);
+    }
+
+    public void clear() {
+        // TODO implementare
+    	ListaMultiset.clear();
+    	OccorrenzeMultiset.clear();
+    }
+
+    public boolean isEmpty() {
+        // TODO implementare
+    	return (ListaMultiset.size() == 0) ? true : false;
+    }
+
+    @Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((ListaMultiset == null) ? 0 : ListaMultiset.hashCode());
+		result = prime * result + Numero;
+		result = prime * result + ((OccorrenzeMultiset == null) ? 0 : OccorrenzeMultiset.hashCode());
+		return result;
+	}
+
+    @Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		MyMultiset other = (MyMultiset) obj;
+		if (ListaMultiset == null) {
+			if (other.ListaMultiset != null)
+				return false;
+		} else if (!ListaMultiset.equals(other.ListaMultiset))
+			return false;
+		if (Numero != other.Numero)
+			return false;
+		if (OccorrenzeMultiset == null) {
+			if (other.OccorrenzeMultiset != null)
+				return false;
+		} else if (!OccorrenzeMultiset.equals(other.OccorrenzeMultiset))
+			return false;
+		return true;
+		
+	}
+
+}
