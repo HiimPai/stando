@@ -1,0 +1,188 @@
+package it.unicam.cs.asdl1819.miniproject1;
+
+import java.util.*;
+import java.util.HashSet; // Utilizzare questa classe per i set
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+
+/**
+ * TODO spiegare come viene implementato il multiset.
+ * 
+ * @author Luca Tesei (template) **Nome Cognome Studente** (implementazione)
+ *
+ * @param <E>
+ *            il tipo degli elementi del multiset
+ */
+public class MyMultiset<E> implements Multiset<E> {
+	private List<E> listaMultiset;
+	private int Numero;
+    // TODO Inserire le variabili istanza che servono
+
+    // TODO Inserire eventuali classi interne per gli elementi del multinsieme e
+    // per l'iteratore.
+
+    /**
+     * Crea un multiset vuoto.
+     */
+    public MyMultiset() {
+        // TODO Implementare
+    	listaMultiset = new ArrayList<E>();
+    	this.Numero = Numero;
+    }
+
+    public int size() {
+        // TODO Implementare
+    	return listaMultiset.size();
+    }
+
+    public int count(Object element) {
+        // TODO Implementare
+    	if(element == null) {
+    		throw new NullPointerException();
+    	}
+    	int count = 0;
+    	for(E i : listaMultiset) {
+    		if(i.equals(element)) {
+    			count++;
+    		}
+    	}
+    	return count;
+    }
+
+    public int add(E element, int occurrences) {
+        // TODO Implementare
+    	int value = this.count(element);
+    	int count = 0;
+    	if(element == null) {
+    		throw new NullPointerException();
+    	}
+    	if (occurrences < 0) {
+			throw new IllegalArgumentException();
+		}
+    	if(occurrences > Integer.MAX_VALUE) {
+    		throw new IllegalArgumentException();
+    	}
+    	for(int i = 1; i <= occurrences; i++) {
+    		listaMultiset.add(element);
+    	}
+    	return value;
+    }
+
+    public void add(E element) {
+        // TODO Implementare
+    	if(element == null) {
+    		throw new NullPointerException();
+    	}
+    	listaMultiset.add(element);
+    }
+
+    public int remove(Object element, int occurrences) {
+    	if(element == null) {
+    		throw new NullPointerException();
+    	}
+        // TODO implementare
+    	int value = this.count(element);
+    	if (occurrences < 0) {
+			throw new IllegalArgumentException();
+		}
+
+		for(int i = 1; i <= occurrences; i++) {
+			listaMultiset.remove(element);
+		}
+		return value;
+    }
+
+    public boolean remove(Object element) {
+    	if(element == null) {
+    		throw new NullPointerException();
+    	}
+        // TODO implementare
+		return (listaMultiset.remove(element)) ? true : false;
+    }
+    
+    public int setCount(E element, int count) {
+    	int value = this.count(element);
+    	if (count < 0) {
+			throw new IllegalArgumentException();
+		}
+		
+    	   if (this.count(element) < count) {
+               this.add(element, count - this.count(element));
+           } else {
+               this.remove(element, this.count(element) - count);
+           }
+           return value;
+		}
+        // TODO implementare
+
+
+    public Set<E> elementSet() {
+        // TODO implementare
+    	Set<E> hash = new HashSet<E>();      
+    	hash.addAll(listaMultiset);
+    	return hash;
+    }
+
+    public Iterator<E> iterator() {
+    	MyMultisetIterator myItr = new MyMultisetIterator();
+        return myItr;
+      }
+
+      private class MyMultisetIterator implements Iterator<E>{
+    	 private int index = 0;
+		@Override
+		public boolean hasNext() {
+			return index != MyMultiset.this.listaMultiset.size();
+			// TODO Auto-generated method stub
+		}
+
+		@Override
+		public E next() {
+			 if (index >= MyMultiset.this.listaMultiset.size())
+		            throw new NoSuchElementException();
+
+		        E elementOfMultiset = listaMultiset.get(index);
+		        index++;
+		        return elementOfMultiset;
+			// TODO Auto-generated method stub
+		}
+        // TODO implementare
+    }
+
+    public boolean contains(Object element) {
+        // TODO implementare
+    	if(element == null) {
+    		throw new NullPointerException();
+    	}
+    	return listaMultiset.contains(element);
+    }
+
+    public void clear() {
+        // TODO implementare
+    	listaMultiset.clear();
+    }
+
+    public boolean isEmpty() {
+        // TODO implementare
+    	return listaMultiset.isEmpty();
+    }
+
+    @Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((listaMultiset == null) ? 0 : listaMultiset.hashCode());
+		result = prime * result + Numero;
+		return result;
+	}
+
+    @Override
+	public boolean equals(Object obj) {
+		return false;	
+	}
+
+}
