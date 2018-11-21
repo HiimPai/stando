@@ -16,8 +16,8 @@ import java.util.stream.Collectors;
  *            il tipo degli elementi del multiset
  */
 public class MyMultiset<E> implements Multiset<E> {
-	private List<E> ListaMultiset;
-	private List<Integer> OccorrenzeMultiset;
+	private List<E> listaMultiset;
+	private List<Integer> occorrenzeMultiset;
 	private int Numero;
     // TODO Inserire le variabili istanza che servono
 
@@ -29,15 +29,14 @@ public class MyMultiset<E> implements Multiset<E> {
      */
     public MyMultiset() {
         // TODO Implementare
-    	ListaMultiset = new ArrayList<E>();
-    	OccorrenzeMultiset = new ArrayList<Integer>();
-    	this.Numero = Numero;
+    	listaMultiset = new ArrayList<E>();
+    	occorrenzeMultiset = new ArrayList<Integer>();
     }
 
     public int size() {
         // TODO Implementare
     	int size = 0;
-		for (Integer i: OccorrenzeMultiset){
+		for (Integer i: occorrenzeMultiset){
 			size += i;
 		}
 		return size;
@@ -48,60 +47,65 @@ public class MyMultiset<E> implements Multiset<E> {
     	if(element == null) {
     		throw new NullPointerException();
     	}
-    	int index = ListaMultiset.indexOf(element);
+    	int index = listaMultiset.indexOf(element);
     	if (index == -1) {
 			return 0;
 		} else if (index != -1) {
-			return OccorrenzeMultiset.get(index);
+			return occorrenzeMultiset.get(index);
 		}
 		return index;
     }
 
     public int add(E element, int occurrences) {
         // TODO Implementare
+    	int indice = listaMultiset.indexOf(element);
     	if(element == null) {
     		throw new NullPointerException();
     	}
     	if (occurrences < 0) {
 			throw new IllegalArgumentException();
 		}
-    	if(occurrences == Integer.MAX_VALUE) {
+    	if(occurrences > Integer.MAX_VALUE) {
     		throw new IllegalArgumentException();
     	}
-
-    	int indice = ListaMultiset.indexOf(element);
-		int prevCount = 0;
-
-		if (indice != -1) {
-			prevCount = OccorrenzeMultiset.get(indice);
-			OccorrenzeMultiset.set(indice, prevCount + occurrences);
+    
+    	int prevCount = occorrenzeMultiset.get(indice);
+		
+		if (indice != -1 && prevCount + occurrences > Integer.MAX_VALUE) {
+			throw new IllegalArgumentException();
 		}
-		else if (occurrences != 0) {
-			ListaMultiset.add(element);
-			OccorrenzeMultiset.add(occurrences);
+		 else {
+			 occorrenzeMultiset.set(indice, prevCount + occurrences);
+			 }
+		 if (occurrences != 0) {
+			listaMultiset.add(element);
+			occorrenzeMultiset.add(occurrences);
 		}
-
 		return prevCount;
     	
     }
 
     public void add(E element) {
         // TODO Implementare
+    	 if(element == null) {
+             throw new NullPointerException();
+         }
+         int indice = listaMultiset.indexOf(element);
+         int prevCount = 0;
+         if (listaMultiset.contains(element)) {
+             prevCount = occorrenzeMultiset.get(indice);
+             occorrenzeMultiset.set(indice, prevCount + 1);
+         } else {
+             listaMultiset.add(element);
+             occorrenzeMultiset.add(1);
+         }
+     }
+
+    public int remove(Object element, int occurrences) {
     	if(element == null) {
     		throw new NullPointerException();
     	}
-    	int indice = ListaMultiset.indexOf(element);
-		int prevCount = 0;
-
-		if (indice != -1) {
-			prevCount = OccorrenzeMultiset.get(indice);
-			OccorrenzeMultiset.set(indice, prevCount + 1);
-		}
-    }
-
-    public int remove(Object element, int occurrences) {
-    	int index = ListaMultiset.indexOf(element);
-    	int prevCount = OccorrenzeMultiset.get(index);
+    	int index = listaMultiset.indexOf(element);
         // TODO implementare
     	if (occurrences < 0) {
 			throw new IllegalArgumentException();
@@ -109,13 +113,14 @@ public class MyMultiset<E> implements Multiset<E> {
 
 		if (index == -1)
 			return 0;
-
+		
+    	int prevCount = occorrenzeMultiset.get(index);
 		if (prevCount > occurrences) {
-			OccorrenzeMultiset.set(index, prevCount - occurrences);
+			occorrenzeMultiset.set(index, prevCount - occurrences);
 		}
 		else {
-			ListaMultiset.remove(index);
-			OccorrenzeMultiset.remove(index);
+			listaMultiset.remove(index);
+			occorrenzeMultiset.remove(index);
 		}
 
 		return prevCount;
@@ -123,25 +128,36 @@ public class MyMultiset<E> implements Multiset<E> {
 
     public boolean remove(Object element) {
         // TODO implementare
+    	if(element == null) {
+    		throw new NullPointerException();
+    	}
+    	if (!listaMultiset.contains(element))
+            return false;
+    	
 		return remove(element, 1) > 0;
     }
     
     public int setCount(E element, int count) {
-    	
+    	if(element == null) {
+    		throw new NullPointerException();
+    	}
     	if (count < 0) {
 			throw new IllegalArgumentException();
 		}
-
-		if (count == 0)
-			remove(element);
-
-		int index = ListaMultiset.indexOf(element);
-		if (index == -1)
+    	int index = listaMultiset.indexOf(element);
+		if (index == -1) {
 			return add(element, count);
-
-		int prevCount = (int) ListaMultiset.get(index);
-		OccorrenzeMultiset.set(index, count);
-
+		}
+		int prevCount = occorrenzeMultiset.get(index);
+		if(count == 0) {
+			remove(element,prevCount);
+		}
+		else {
+			occorrenzeMultiset.set(index, count);
+		}
+		if(listaMultiset.contains(element)) {
+			occorrenzeMultiset.set(index, count);
+		}
 		return prevCount;
 		}
         // TODO implementare
@@ -149,66 +165,71 @@ public class MyMultiset<E> implements Multiset<E> {
 
     public Set<E> elementSet() {
         // TODO implementare
-    	Set<E> p = new HashSet<E>(ListaMultiset);                
+    	Set<E> p = new HashSet<E>(listaMultiset);                
     	return p;
     }
 
     public Iterator<E> iterator() {
-		return null;
+    	MyMultisetIterator myItr = new MyMultisetIterator();
+    	return myItr;
         // TODO implementare
     }
+    private class MyMultisetIterator implements Iterator<E>{
+   	 private int index = 0;
+   	 private ArrayList<E> prova;
+   	
+		@Override
+		public boolean hasNext() {
+			return index != MyMultiset.this.listaMultiset.size();
+			// TODO Auto-generated method stub
+		}
+
+		@Override
+		public E next() {
+			 if (index >= MyMultiset.this.listaMultiset.size())
+		            throw new NoSuchElementException();
+
+		        E elementOfMultiset = listaMultiset.get(index);
+		        index++;
+		        return elementOfMultiset;
+			// TODO Auto-generated method stub
+		}
+       // TODO implementare
+   }
+
 
     public boolean contains(Object element) {
         // TODO implementare
     	if(element == null) {
     		throw new NullPointerException();
     	}
-    	return ListaMultiset.contains(element);
+    	return listaMultiset.contains(element);
     }
 
     public void clear() {
         // TODO implementare
-    	ListaMultiset.clear();
-    	OccorrenzeMultiset.clear();
+    	listaMultiset.clear();
+    	occorrenzeMultiset.clear();
     }
 
     public boolean isEmpty() {
         // TODO implementare
-    	return (ListaMultiset.size() == 0) ? true : false;
+    	return (listaMultiset.size() == 0) ? true : false;
     }
 
     @Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((ListaMultiset == null) ? 0 : ListaMultiset.hashCode());
+		result = prime * result + ((listaMultiset == null) ? 0 : listaMultiset.hashCode());
 		result = prime * result + Numero;
-		result = prime * result + ((OccorrenzeMultiset == null) ? 0 : OccorrenzeMultiset.hashCode());
+		result = prime * result + ((occorrenzeMultiset == null) ? 0 : occorrenzeMultiset.hashCode());
 		return result;
 	}
 
     @Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		MyMultiset other = (MyMultiset) obj;
-		if (ListaMultiset == null) {
-			if (other.ListaMultiset != null)
-				return false;
-		} else if (!ListaMultiset.equals(other.ListaMultiset))
-			return false;
-		if (Numero != other.Numero)
-			return false;
-		if (OccorrenzeMultiset == null) {
-			if (other.OccorrenzeMultiset != null)
-				return false;
-		} else if (!OccorrenzeMultiset.equals(other.OccorrenzeMultiset))
-			return false;
-		return true;
+		return false;
 		
 	}
 
