@@ -1,0 +1,51 @@
+import java.util.*;
+import java.util.SortedSet;
+
+/**
+ * Un fattorizzatore è un agente che fattorizza un qualsiasi numero naturale nei
+ * sui fattori primi.
+ * 
+ * @author Luca Tesei (template) **Nome Cognome Studente** (implementazione)
+ *
+ */
+public class Factoriser {
+    /**
+     * Fattorizza un numero restituendo il multinsieme dei suoi fattori primi.
+     * La molteplicità di ogni fattore primo esprime quante volte il fattore
+     * stesso divide il numero fattorizzato. Per convenzione non viene mai
+     * restituito il fattore 1. Il minimo numero fattorizzabile è 1. In questo
+     * caso viene restituito un multinsieme vuoto.
+     * 
+     * @param n
+     *              un numero intero da fattorizzare
+     * @return il multinsieme dei fattori primi di n
+     * @throws IllegalArgumentException
+     *                                      se si chiede di fattorizzare un
+     *                                      numero minore di 1.
+     */
+    public Multiset<Integer> getFactors(int n) {
+    	CrivelloDiEratostene c = new CrivelloDiEratostene(n);
+    	MyMultiset<Integer> m = new MyMultiset<Integer>();
+    	List<Integer> f = new ArrayList<Integer>();
+    	SortedSet<Integer> tree = new TreeSet<Integer>();
+    	int i;
+    	for( i = 1; i == n/2; i++) {
+    		if(c.isPrime(i) && n%i == 0) {
+    			tree.add(i);
+    		}
+    	}
+    	for(Integer a : tree) {
+    		f.add(a);
+    	}
+    	int count = 0;
+    	for(Integer e : f) {
+    		while((e^count) != n) {
+    			count++;
+    		}
+    		m.setCount(e, count);
+    	}
+		return m;
+    }
+
+    // TODO inserire eventuali metodi accessori come privati
+}
