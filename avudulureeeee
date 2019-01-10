@@ -140,17 +140,17 @@ public class AVLTree<E extends Comparable<E>> {
     public int insert(E el) {
     	if(el == null) {
     		throw new NullPointerException("Elemento nullo");
-    	} 
+    	}
     	if(root == null) {
     		this.root = new AVLTreeNode(el);
-    	}  
-    	if(this.getNodeOf(el) == null) {
-    		this.numberOfNodes++;
+    		return 0;
     	}
-
-    	int element = this.root.insert(el);
-    	this.size++;
-    	return element;
+    	if(this.getNodeOf(el) == null) {
+    		this.numberOfNodes +=1;
+    	}
+    	int result = this.root.insert(el);
+    	this.size ++;
+    	return result;
     }
 
     /**
