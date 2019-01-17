@@ -1,0 +1,275 @@
+package it.unicam.cs.asdl1819.miniproject3;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+
+import com.sun.javafx.collections.MappingChange.Map;
+
+/**
+ * Implementazione dell'interfaccia {@code Graph<V,E>} per grafi diretti
+ * utilizzando liste di adiacenza per la rappresentazione.
+ * 
+ * Questa classe non supporta le operazioni di rimozione di nodi e archi e le
+ * operazioni indicizzate di ricerca di nodi e archi.
+ * 
+ * @author Luca Tesei
+ *
+ * @param <V>
+ *            etichette dei nodi
+ * @param <E>
+ *            etichette degli archi
+ */
+public class AdjacentListDirectedGraph<V, E> implements Graph<V, E> {
+	private HashMap<GraphNode<V>, Set<GraphEdge<V, E>>> list;
+    // TODO inserire le variabili istanza
+
+    /**
+     * Crea un grafo vuoto.
+     */
+    public AdjacentListDirectedGraph() {
+    	this.list = new HashMap<GraphNode<V>, Set<GraphEdge<V, E>>>();
+        // TODO implementare
+    }
+
+    public int nodeCount() {
+        // TODO implementare
+        return this.list.keySet().size();
+    }
+
+    public int edgeCount() {
+    	int result = 0;
+    	for(GraphNode<V> n : this.list.keySet()) {
+    		result = result + this.list.get(n).size();
+
+    	}
+        // TODO implementare
+        return result / 2;
+    }
+    public int size() {
+    	return this.nodeCount() + this.edgeCount();
+        // TODO implementare
+    }
+
+    public boolean isEmpty() {
+        // TODO implementare
+        return this.list.isEmpty();
+    }
+
+    public void clear() {
+    	this.list.clear();
+        // TODO implementare
+    }
+
+    public boolean isDirected() {
+    	//il grafo non è orientato
+        return true;
+    }
+
+    public Set<GraphNode<V>> getNodes() {
+    	return this.list.keySet();
+        // TODO implementare
+    }
+
+    public boolean addNode(GraphNode<V> node) {
+    	if(node == null) {
+    		throw new NullPointerException("Il nodo è nullo");
+    	}
+    	else if(this.list.keySet().contains(node)) {
+    		return false;
+    	}
+    	//aggiungo il nodo con l'insieme degli archi associati vuoti
+    	this.list.put(node, new HashSet<GraphEdge<V, E>>());
+    	
+        // TODO implementare
+        return true;
+    }
+
+    public boolean removeNode(GraphNode<V> node) {
+        if (node == null)
+            throw new NullPointerException(
+                    "Tentativo di rimuovere un nodo null");
+        throw new UnsupportedOperationException(
+                "Rimozione dei nodi non supportata");
+    }
+
+    public boolean containsNode(GraphNode<V> node) {
+    	if(node == null) {
+    		throw new NullPointerException("Nodo nullo");
+    	}
+    	if(this.list.keySet().contains(node)) {
+    		return true;
+    	}
+        // TODO implementare
+        return false;
+    }
+
+    public int getNodeIndex(V label) {
+        if (label == null)
+            throw new NullPointerException(
+                    "Tentativo di ricercare un nodo con etichetta null");
+        throw new UnsupportedOperationException(
+                "Ricerca dei nodi con indice non supportata");
+    }
+
+    public GraphNode<V> getNodeAtIndex(int i) {
+        throw new UnsupportedOperationException(
+                "Ricerca dei nodi con indice non supportata");
+    }
+
+    public Set<GraphNode<V>> getAdjacentNodes(GraphNode<V> node) {
+    	if(node == null) {
+    		throw new NullPointerException("Nodo nullo");
+    	}
+    	Set<GraphEdge<V, E>> adjNodes = this.list.get(node);
+    	if(adjNodes == null) {
+    		throw new IllegalArgumentException("Tentativo Fallito");
+    	}
+		Set<GraphNode<V>> result = new HashSet<GraphNode<V>>();
+		for(GraphEdge<V, E> e : adjNodes) {
+			if(e.getNode1().equals(node)) {
+				result.add(e.getNode2());
+			}
+			else {
+				result.add(e.getNode1());
+				
+			}
+		}
+    	
+        // TODO implementare
+        return result;
+    }
+
+    public Set<GraphNode<V>> getPredecessorNodes(GraphNode<V> node) {
+    	if(node == null) {
+    		throw new NullPointerException("Nodo nullo");
+    	}
+    	if(!this.containsNode(node)) {
+    		throw new IllegalArgumentException("Tentativo Fallito");
+    	}
+    	Set<GraphNode<V>> prevNode = new HashSet<GraphNode<V>>();
+    	Set<GraphEdge<V, E>> edgeList = new HashSet<GraphEdge<V, E>>(this.getEdges());
+    	for(GraphEdge<V, E> e : edgeList) {
+    		if(e.getNode2().equals(node)) {
+    			prevNode.add(e.getNode1());
+    		}
+    	}	
+    	return prevNode;
+        // TODO implementare
+    }
+
+    public Set<GraphEdge<V, E>> getEdges() {
+    	Set<GraphEdge<V, E>> edgeList = new HashSet<GraphEdge<V, E>>();
+    	for(GraphNode<V> n : this.list.keySet()) {
+    		edgeList.addAll(this.list.get(n));
+    	}
+        // TODO implementare
+    	return edgeList;
+    }
+
+    public boolean addEdge(GraphEdge<V, E> edge) {
+    	if(edge == null) {
+    		throw new NullPointerException("Arco nullo");
+    	}
+    	if(!this.containsNode(edge.getNode1()) || !this.containsNode(edge.getNode2())) {
+    		throw new IllegalArgumentException("Un estremo è nullo");
+    	}
+    	if(!edge.isDirected()) {
+    		throw new IllegalArgumentException("Grafo non compatibile");
+    	}
+    	//Inserisco l'arco nella lista di adicenza sia del nodo1 che nodo2
+    	boolean result = this.list.get(edge.getNode1()).add(edge);
+    	result = result && this.list.get(edge.getNode2()).add(edge);
+        // TODO implementare
+        return result;
+    }
+
+    public boolean removeEdge(GraphEdge<V, E> edge) {
+        throw new UnsupportedOperationException(
+                "Rimozione degli archi non supportata");
+    }
+
+    public boolean containsEdge(GraphEdge<V, E> edge) {
+    	if(edge == null) {
+    		throw new NullPointerException("Arco nullo");
+    	}
+    	if(!this.containsNode(edge.getNode1()) || !this.containsNode(edge.getNode2())) {
+    		throw new IllegalArgumentException("Un estremo è nullo");
+    	}
+    	Set<GraphEdge<V, E>> edgeList = new HashSet<GraphEdge<V, E>>();
+    	for(GraphNode<V> n : this.list.keySet()) {
+    		edgeList.addAll(this.list.get(n));
+    	}
+    	for(GraphEdge<V, E> e : edgeList) {
+    		if(e.equals(edge)) {
+    			return true;
+    		}
+    	}
+    	
+        // TODO implementare    	
+        return false;
+    }
+
+    public Set<GraphEdge<V, E>> getEdges(GraphNode<V> node) {
+    	if(node == null) {
+    		throw new NullPointerException("Nodo nullo");
+    	}
+    	if(!this.containsNode(node)) {
+    		throw new IllegalArgumentException("Tentativo fallito");
+    	}
+    	Set<GraphEdge<V, E>> edgeList = this.list.get(node);
+    	return edgeList;
+    }
+
+    public Set<GraphEdge<V, E>> getIngoingEdges(GraphNode<V> node) {
+    	if(node == null) {
+    		throw new NullPointerException("Nodo nullo");
+    	}
+    	if(!this.containsNode(node)) {
+    		throw new IllegalArgumentException("Tentativo Fallito");
+    	}
+    	Set<GraphEdge<V, E>> edgeList = new HashSet<GraphEdge<V, E>>();
+    	edgeList.addAll(this.getEdges());
+    	Set<GraphEdge<V, E>> result = new HashSet<GraphEdge<V, E>>();
+    	for(GraphEdge<V, E> e : edgeList) {
+    		if(e.getNode2().equals(node)) {
+    			result.add(e);
+    		}
+    	}	
+        // TODO implementare
+        return result;
+    }
+
+    public int getDegree(GraphNode<V> node) {
+    	if(node == null) {
+    		throw new NullPointerException("Nodo nullo");
+    	}
+    	if(!this.containsNode(node)) {
+    		throw new IllegalArgumentException("Tentativo Fallito");
+    	}
+    	int result = this.getIngoingEdges(node).size() + this.list.get(node).size();
+		return result;
+        // TODO implementare
+    }
+
+    public Set<GraphEdge<V, E>> getEdgesBetween(int index1, int index2) {
+        throw new UnsupportedOperationException(
+                "Operazioni con indici non supportate");
+    }
+
+    public Set<GraphEdge<V, E>> getEdgesBetween(GraphNode<V> node1,
+            GraphNode<V> node2) {
+    	if(node1 == null || node2 == null) {
+    		throw new NullPointerException("Nodo nullo");
+    	}
+    	if(!this.list.containsKey(node1) || !this.list.containsKey(node2)) {
+    		throw new IllegalArgumentException("Tentativo fallito");
+    	}
+    	Set<GraphEdge<V, E>> edgeList = this.list.get(node1);
+    	Set<GraphEdge<V, E>> result = new HashSet<GraphEdge<V, E>>();
+    	for(GraphEdge<V, E> e : edgeList) {
+    		if(e.getNode2().equals(node2)) {
+    			result.add(e);
+    		}
+    	}
