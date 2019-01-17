@@ -273,3 +273,23 @@ public class AdjacentListDirectedGraph<V, E> implements Graph<V, E> {
     			result.add(e);
     		}
     	}
+        // TODO implementare
+		return result;
+    }
+
+    public GraphNode<V> getNode(V label) {
+    	if(label == null) {
+    		throw new NullPointerException("Nodo nullo");
+    	}
+    	//scorro l'insieme dei nodi e cerco quello che voglio
+    	for(GraphNode<V> n : this.list.keySet()) {
+    		if(n.getLabel().equals(label)) {
+    			return n;
+    		}
+    	}
+    	throw new IllegalArgumentException("Tenativo fallito");
+        // TODO implementare
+    }
+
+    // TODO inserire eventuali metodi aggiuntivi
+}
