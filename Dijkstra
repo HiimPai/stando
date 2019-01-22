@@ -27,8 +27,9 @@ import java.util.Set;
  */
 public class DijkstraShortestPathComputer<V, E> {
 	private Graph<V, E> list;
-	private List<GraphNode<V>> vertex;
-	private List<GraphNode<V>> shortestPath = new LinkedList<>();
+	private Set<GraphNode<V>> settledNodes;
+	private Set<GraphNode<V>> unsettledNodes;
+	private List<GraphEdge<V, E>> edges;
     // TODO inserire le variabili istanza
 
     /**
@@ -56,6 +57,9 @@ public class DijkstraShortestPathComputer<V, E> {
      */
     public DijkstraShortestPathComputer(Graph<V, E> graph) {
     	this.list = graph;
+    	this.settledNodes = new HashSet<GraphNode<V>>();
+    	this.unsettledNodes = new HashSet<GraphNode<V>>();
+    	this.edges = new ArrayList<GraphEdge<V, E>>();
 
         // TODO implementare
     }
@@ -82,23 +86,32 @@ public class DijkstraShortestPathComputer<V, E> {
     	if(!this.list.containsNode(sourceNode)) {
     		throw new IllegalArgumentException("Nodo non esistente");
     	}
-    	Set<GraphNode<V>> settledNodes = new HashSet();
-    	Set<GraphNode<V>> unsettledNodes = new HashSet();
+    	
+    	Set<GraphNode<V>> settledNodes = new HashSet<GraphNode<V>>();
+    	Set<GraphNode<V>> unsettledNodes = new HashSet<GraphNode<V>>();
     	unsettledNodes.add(sourceNode);
+    	for(GraphNode<V> n : unsettledNodes) {
+    		n.setPrevious(null);
+    	}
     	while(unsettledNodes.size() != 0) {
     		GraphNode<V> currentNode = this.getLowestDistanceNode(unsettledNodes);
     		unsettledNodes.remove(currentNode);
+    		settledNodes.add(currentNode);
     		if(currentNode.getFloatingPointDistance() == Integer.MAX_VALUE) {
     			break;
     		}
-    		for(GraphNode<V> n : unsettledNodes) {
-    			double alt = n.getFloatingPointDistance() + (currentNode.getFloatingPointDistance() - n.getFloatingPointDistance());
-    			if( alt < n.getFloatingPointDistance()) {
-    				n.setFloatingPointDistance(alt);
-    				currentNode.setPrevious(n);
+    		for(GraphNode<V> n : this.list.getAdjacentNodes(currentNode)) {
+    			Set<GraphEdge<V, E>> edge = this.list.getEdgesBetween(currentNode, n);
+    			for(GraphEdge<V, E> e : edge) {
+    				double alt =  currentNode.getFloatingPointDistance() + e.getWeight();
+    					if( n.getFloatingPointDistance() > alt) {
+    						n.setFloatingPointDistance(alt);
+    						n.setPrevious(currentNode);
+    						unsettledNodes.add(n);
+    					}
+    				}
     			}
     		}
-    	}
         // TODO implementare
     }
 
@@ -128,7 +141,14 @@ public class DijkstraShortestPathComputer<V, E> {
      */
     public GraphNode<V> getLastSource() {
         // TODO implementare
-        return null;
+        final java.util.Iterator<GraphNode<V>> itr = settledNodes.iterator();
+        GraphNode<V> lastElement = itr.next();
+
+        while(itr.hasNext()) {
+            lastElement=itr.next();
+        }
+
+        return lastElement;
     }
 
     /**
@@ -173,10 +193,19 @@ public class DijkstraShortestPathComputer<V, E> {
     	if(!this.list.containsNode(targetNode)) {
     		throw new IllegalArgumentException("Nodo non esistente");
     	}
+    	GraphNode<V> node = null;
+    	for(GraphNode<V> n : settledNodes) {
+    		if(n.equals(targetNode)) {
+    			node = n;
+    		}
+    	}
     	List<GraphEdge<V, E>> edges = new ArrayList<GraphEdge<V, E>>();
-    	while(targetNode.getPrevious() != null) {
-    		edges.addAll(this.list.getIngoingEdges(targetNode));
-    		targetNode = targetNode.getPrevious();
+    	while(node.getPrevious() != null) {
+    		for(GraphEdge<V, E> e : this.list.getIngoingEdges(node)) {
+    			if(e.getNode1().equals(node.getPrevious())) {
+    				edges.add(e);
+    			}
+    		}
     	}
     	Collections.reverse(edges);
         // TODO implementare
