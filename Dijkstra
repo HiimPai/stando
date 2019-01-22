@@ -29,7 +29,8 @@ public class DijkstraShortestPathComputer<V, E> {
 	private Graph<V, E> list;
 	private Set<GraphNode<V>> settledNodes;
 	private Set<GraphNode<V>> unsettledNodes;
-	private List<GraphEdge<V, E>> edges;
+	private boolean check = false;
+	private GraphNode<V> call = null;
     // TODO inserire le variabili istanza
 
     /**
@@ -56,10 +57,27 @@ public class DijkstraShortestPathComputer<V, E> {
      *                                      un peso negativo.
      */
     public DijkstraShortestPathComputer(Graph<V, E> graph) {
+    	if(graph == null) {
+    		throw new NullPointerException("Grafo nullo");
+    	}
+    	if(graph.isEmpty()) {
+    		throw new IllegalArgumentException("Grafo vuoto");
+    	}
+    	if(!graph.isDirected()) {
+    		throw new IllegalArgumentException("Grafo non orientato");
+    	}
+    	Set<GraphEdge<V, E>> edges = new HashSet<GraphEdge<V, E>>(graph.getEdges());
+    	for(GraphEdge<V, E> e : edges) {
+    		if(e.getWeight() == Double.NaN) {
+    			throw new IllegalArgumentException("Arco con peso inesistente");
+    		}
+    		if(e.getWeight() < 0) {
+    			throw new IllegalArgumentException("Arco con peso negativo");
+    		}
+    	}
     	this.list = graph;
     	this.settledNodes = new HashSet<GraphNode<V>>();
     	this.unsettledNodes = new HashSet<GraphNode<V>>();
-    	this.edges = new ArrayList<GraphEdge<V, E>>();
 
         // TODO implementare
     }
@@ -86,32 +104,31 @@ public class DijkstraShortestPathComputer<V, E> {
     	if(!this.list.containsNode(sourceNode)) {
     		throw new IllegalArgumentException("Nodo non esistente");
     	}
-    	
-    	Set<GraphNode<V>> settledNodes = new HashSet<GraphNode<V>>();
-    	Set<GraphNode<V>> unsettledNodes = new HashSet<GraphNode<V>>();
+    	sourceNode.setFloatingPointDistance(0);
     	unsettledNodes.add(sourceNode);
-    	for(GraphNode<V> n : unsettledNodes) {
+    	for(GraphNode<V> n : this.list.getNodes()) {
+    		n.setFloatingPointDistance(Integer.MAX_VALUE);
     		n.setPrevious(null);
+    		unsettledNodes.add(n);
     	}
     	while(unsettledNodes.size() != 0) {
     		GraphNode<V> currentNode = this.getLowestDistanceNode(unsettledNodes);
     		unsettledNodes.remove(currentNode);
-    		settledNodes.add(currentNode);
-    		if(currentNode.getFloatingPointDistance() == Integer.MAX_VALUE) {
-    			break;
-    		}
     		for(GraphNode<V> n : this.list.getAdjacentNodes(currentNode)) {
     			Set<GraphEdge<V, E>> edge = this.list.getEdgesBetween(currentNode, n);
     			for(GraphEdge<V, E> e : edge) {
     				double alt =  currentNode.getFloatingPointDistance() + e.getWeight();
-    					if( n.getFloatingPointDistance() > alt) {
+    					if(n.getFloatingPointDistance() > alt) {
     						n.setFloatingPointDistance(alt);
     						n.setPrevious(currentNode);
     						unsettledNodes.add(n);
     					}
     				}
     			}
+    		settledNodes.add(currentNode);
+        	call = currentNode;
     		}
+    	check = true;
         // TODO implementare
     }
 
@@ -124,7 +141,7 @@ public class DijkstraShortestPathComputer<V, E> {
      */
     public boolean isComputed() {
         // TODO implementare
-        return false;
+        return check;
     }
 
     /**
@@ -140,15 +157,11 @@ public class DijkstraShortestPathComputer<V, E> {
      *                                   partire da un nodo sorgente
      */
     public GraphNode<V> getLastSource() {
+    	if(!this.isComputed()) {
+    		throw new IllegalStateException("Metodo non eseguito");
+    	}
         // TODO implementare
-        final java.util.Iterator<GraphNode<V>> itr = settledNodes.iterator();
-        GraphNode<V> lastElement = itr.next();
-
-        while(itr.hasNext()) {
-            lastElement=itr.next();
-        }
-
-        return lastElement;
+        return call;
     }
 
     /**
@@ -193,6 +206,12 @@ public class DijkstraShortestPathComputer<V, E> {
     	if(!this.list.containsNode(targetNode)) {
     		throw new IllegalArgumentException("Nodo non esistente");
     	}
+    	if(!this.isComputed()) {
+    		throw new IllegalStateException("Nodo non computato");
+    	}
+    	if(!this.settledNodes.contains(targetNode)) {
+    		throw new IllegalArgumentException();
+    	}
     	GraphNode<V> node = null;
     	for(GraphNode<V> n : settledNodes) {
     		if(n.equals(targetNode)) {
@@ -206,6 +225,7 @@ public class DijkstraShortestPathComputer<V, E> {
     				edges.add(e);
     			}
     		}
+			node = node.getPrevious();
     	}
     	Collections.reverse(edges);
         // TODO implementare
@@ -254,3 +274,4 @@ public class DijkstraShortestPathComputer<V, E> {
     
     }
 }
+    
